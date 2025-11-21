@@ -1,0 +1,102 @@
+name: Validate Configs
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'policy.yaml'
+      - 'providers.yaml'
+      - '.nexxon/schemas/**'
+      - 'scripts/validate-configs.mjs'
+      - 'scripts/validate-configs.ps1'
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths:
+      - 'policy.yaml'
+      - 'providers.yaml'
+      - '.nexxon/schemas/**'
+      - 'scripts/validate-configs.mjs'
+      - 'scripts/validate-configs.ps1'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: ["lts/*", "20.x"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install dependencies (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (Test-Path package-lock.json) { npm ci } else { npm install }
+
+      - name: Validate policy.yaml and providers.yaml
+        id: validate
+        run: npm run validate
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          echo "### Nexxon Config Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- OS: $RUNNER_OS" >> $GITHUB_STEP_SUMMARY
+          echo "- Node: $(node -v)" >> $GITHUB_STEP_SUMMARY
+          echo "- policy.yaml: $(test -f policy.yaml && echo present || echo missing)" >> $GITHUB_STEP_SUMMARY
+          echo "- providers.yaml: $(test -f providers.yaml && echo present || echo missing)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Collect context for PR comment
+        if: always() && github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.node == 'lts/*'
+        id: ctx
+        shell: bash
+        run: |
+          echo "os=$RUNNER_OS" >> $GITHUB_OUTPUT
+          echo "node=$(node -v)" >> $GITHUB_OUTPUT
+          if [ -f policy.yaml ]; then echo "policy=present" >> $GITHUB_OUTPUT; else echo "policy=missing" >> $GITHUB_OUTPUT; fi
+          if [ -f providers.yaml ]; then echo "providers=present" >> $GITHUB_OUTPUT; else echo "providers=missing" >> $GITHUB_OUTPUT; fi
+
+      - name: Comment on PR with validation status
+        if: always() && github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.node == 'lts/*'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- nexxon-validate-comment -->';
+            const status = '${{ steps.validate.outcome }}' === 'success' ? '✅ Passed' : '❌ Failed';
+            const body = `${marker}
+            ### Nexxon Config Validation
+            - Status: ${status}
+            - OS: ${{ steps.ctx.outputs.os }}
+            - Node: ${{ steps.ctx.outputs.node }}
+            - policy.yaml: ${{ steps.ctx.outputs.policy }}
+            - providers.yaml: ${{ steps.ctx.outputs.providers }}
+            `;
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const prev = comments.find(c => c.body && c.body.includes(marker));
+            if (prev) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: prev.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }

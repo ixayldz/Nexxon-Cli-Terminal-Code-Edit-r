@@ -1,0 +1,30 @@
+// Error codes per PRD Section 19 - Error Taxonomy
+export const ERROR_CODES = {
+  // Generic errors: 1000-1999
+  UNKNOWN_COMMAND: 1000,
+  INVALID_ARGS: 1001,
+
+  // Policy errors: 4000-4999
+  POLICY_DENIED: 4001,
+  POLICY_INVALID_OVERRIDE: 4002,
+  POLICY_MERGE_CONFLICT: 4003,
+
+  // Provider errors: 5000-5999
+  PROVIDER_UNAVAILABLE: 5001,
+  PROVIDER_TIMEOUT: 5002,
+  PROVIDER_QUOTA_EXCEEDED: 5003,
+  PROVIDER_AUTH_FAILED: 5004,
+  LLM_ERROR: 5000, // Generic LLM error
+
+  // Runtime errors: 6000-6999
+  RUNTIME_ERROR: 6000,
+  DIFF_APPLY_CONFLICT: 6001,
+  TEST_FAILED: 6002,
+  INDEX_CORRUPT: 6003,
+
+  // Network errors: 7000-7999
+  NETWORK_UNREACHABLE: 7001,
+  DNS_RESOLUTION_FAILED: 7002,
+} as const;
+
+export type ErrorCode = keyof typeof ERROR_CODES;

@@ -1,0 +1,69 @@
+# Nexxon Policy Configuration Example
+# Based on PRD Section 7.3.5
+
+version: 1
+
+scope:
+  fs:
+    allow:
+      - "./"
+      - "./src"
+      - "./tests"
+      - "./packages"
+    deny:
+      - "../"
+      - "/"
+      - "./node_modules"
+      - "./.git"
+  
+  network:
+    outbound:
+      - "api.openai.com"
+      - "api.anthropic.com"
+      - "api.deepseek.com"
+      - "registry.npmjs.org"
+      - "github.com"
+    blocked:
+      - "*tracking*"
+      - "169.254.169.254"  # AWS metadata endpoint
+  
+  exec:
+    allow:
+      - "git"
+      - "npm"
+      - "node"
+      - "pnpm"
+      - "yarn"
+      - "tsx"
+    confirm:
+      - "npm install"
+      - "rm"
+      - "mv"
+      - "pnpm install"
+
+models:
+  providers:
+    - name: "openai"
+      allow: ["gpt-4o", "gpt-4o-mini"]
+      max_tokens: 8192
+      temperature:
+        min: 0.0
+        max: 0.7
+  local_fallback: true
+
+limits:
+  tokens_per_session: 200000
+  files_read_per_minute: 500
+  bytes_read_per_minute: 10485760  # 10MB
+
+redaction:
+  patterns:
+    - name: secrets
+      regex: '(?i)(api[_-]?key|token|secret|password)\s*[:=]'
+      action: hash
+
+approval:
+  require_for:
+    - writes
+    - exec.confirm
+    - network.outbound

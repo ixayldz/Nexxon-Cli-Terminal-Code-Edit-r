@@ -1,0 +1,41 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "rootDir": "./"
+    },
+    "references": [
+        {
+            "path": "./packages/shared"
+        },
+        {
+            "path": "./packages/policy"
+        },
+        {
+            "path": "./packages/indexer"
+        },
+        {
+            "path": "./packages/audit"
+        },
+        {
+            "path": "./packages/diff"
+        },
+        {
+            "path": "./packages/undo"
+        },
+        {
+            "path": "./packages/ui"
+        },
+        {
+            "path": "./packages/runtime"
+        },
+        {
+            "path": "./packages/cli"
+        }
+    ],
+    "files": []
+}

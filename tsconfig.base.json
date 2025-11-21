@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "lib": [
+      "ES2022"
+    ],
+    "moduleResolution": "Node16",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nexxon/shared/*": [
+        "packages/shared/src/*"
+      ],
+      "@nexxon/policy/*": [
+        "packages/policy/src/*"
+      ],
+      "@nexxon/indexer/*": [
+        "packages/indexer/src/*"
+      ],
+      "@nexxon/diff/*": [
+        "packages/diff/src/*"
+      ],
+      "@nexxon/audit/*": [
+        "packages/audit/src/*"
+      ],
+      "@nexxon/undo/*": [
+        "packages/undo/src/*"
+      ]
+    },
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

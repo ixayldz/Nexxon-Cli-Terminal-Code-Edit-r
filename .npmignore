@@ -1,0 +1,42 @@
+# NPM ignore - exclude from package
+*.md
+!README.md
+!CHANGELOG.md
+
+# Source files (only publish dist)
+packages/*/src/
+packages/*/*.ts
+!packages/*/dist/
+
+# Development files
+.github/
+.vscode/
+.idea/
+scripts/
+planning/
+*.test.ts
+*.test.js
+vitest.config.ts
+tsconfig.json
+.eslintrc.*
+.prettierrc.*
+
+# Documentation
+prd.md
+docs/
+examples/
+
+# Test files
+**/__tests__/
+**/*.test.*
+**/*.spec.*
+coverage/
+
+# Build artifacts (keep dist, exclude build artifacts)
+*.tsbuildinfo
+.cache/
+
+# Misc
+.env*
+tmp/
+artifacts/

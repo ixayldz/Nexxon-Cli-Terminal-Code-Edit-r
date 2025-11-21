@@ -1,0 +1,260 @@
+milestone: "P1 (MVP)"
+project:
+  owner: ""           # optional: org or user; fallback: repo owner
+  title: "P1 (MVP) Board"
+  defaultStatus: "Backlog"
+  statuses: ["Backlog", "In Progress", "Review", "Done"]
+labels:
+  default:
+    - priority/p1
+    - type/feature
+epics:
+  - key: E0
+    title: "Repo, CI ve Temel Altyapı"
+    labels: [area/infra, priority/p0, type/chore]
+    issues:
+      - title: "Monorepo iskeleti ve TS/ESLint/Prettier kurulumu"
+        area: infra
+        assignees: []
+        storyPoints: 3
+        eta: "2026-01-15"
+        body: |
+          Goal
+          - Monorepo düzeni (packages/cli, packages/runtime, packages/shared)
+          - TypeScript config (strict), ESLint, Prettier
+
+          DOD
+          - CI'de lint/test geçiyor
+          - Ortak tsconfig ve script'ler hazır
+
+      - title: "CI matrisi ve Ajv doğrulama entegrasyonu"
+        area: infra
+        assignees: []
+        body: |
+          Goal
+          - OS (ubuntu/windows/macos) ve Node (lts/*, 20.x) matrisi
+          - npm cache ve hızlı kurulum
+          - policy.yaml / providers.yaml Ajv doğrulaması
+
+          DOD
+          - .github/workflows/validate-configs.yml yeşil
+          - PR yorum özeti yayınlanıyor
+
+  - key: E1
+    title: "CLI Çekirdek (Commander.js + Ink)"
+    labels: [area/cli, type/feature]
+    issues:
+      - title: "Komut iskeletleri: init, plan, diff, apply, test, log, whoami, undo"
+        area: cli
+        assignees: []
+        storyPoints: 5
+        eta: "2026-01-22"
+        body: |
+          Goal
+          - Tüm komutların argüman parsing ve --help ekranları
+
+          DOD
+          - Komutlar çağrılabilir (stub) ve yardım ekranları güncel
+
+      - title: "Global bayraklar ve TUI iskeleti"
+        area: cli
+        assignees: []
+        body: |
+          Goal
+          - --validate-policy, --admin-override <reason>
+          - Basit TUI çıktıları (progress/sonuç)
+
+          DOD
+          - Bayraklar tüm komutlarda erişilebilir; TUI temel görünür
+
+  - key: E2
+    title: "Local Runtime ve API Sözleşmesi"
+    labels: [area/runtime, type/feature]
+    issues:
+      - title: "HTTP Runtime: 127.0.0.1 JSON API ve auth token"
+        area: runtime
+        assignees: []
+        body: |
+          Goal
+          - 8.3'e uygun request/response zarfı
+          - context.claims, policy.overrides
+
+          DOD
+          - Tüm endpointler stub yanıt veriyor; CLI bağlanabiliyor
+
+  - key: E3
+    title: ".gitignore-aware Index & Search"
+    labels: [area/search, type/feature]
+    issues:
+      - title: "Repo tarayıcı ve ignore filtreleri"
+        area: search
+        assignees: []
+        body: |
+          Goal
+          - .gitignore parsing, dosya dolaşımı ve listeleme
+
+          DOD
+          - `nexxon index` p95 süreleri kaydediliyor
+
+      - title: "Text/semantic arama (baseline)"
+        area: search
+        assignees: []
+        body: |
+          Goal
+          - Basit text arama ve hafif semantic arama (opsiyonel)
+
+          DOD
+          - `nexxon search` anlamlı sonuç döndürüyor
+
+  - key: E4
+    title: "Planlama (Tek Model LLM)"
+    labels: [area/runtime, type/feature]
+    issues:
+      - title: "Plan üretimi ve prompt adaptörü"
+        area: runtime
+        assignees: []
+        body: |
+          Goal
+          - Tek model ile plan_steps üretimi
+          - Context window yönetimi (7.1.4)
+
+          DOD
+          - `nexxon plan` faydalı plan döndürüyor; timeout/health var
+
+  - key: E5
+    title: "Diff & Apply (Onaylı)"
+    labels: [area/runtime, type/feature]
+    issues:
+      - title: "Unified diff üretimi"
+        area: runtime
+        assignees: []
+        body: |
+          Goal
+          - `nexxon diff` için diff builder
+
+          DOD
+          - Düzgün patch çıktısı, büyük dosyalarda güvenli kesit
+
+      - title: "Apply akışı (dry-run ve onay)"
+        area: runtime
+        assignees: []
+        body: |
+          Goal
+          - Dry-run ve TUI onayı; yazma güvenlikleri
+
+          DOD
+          - `nexxon apply` onay olmadan yazmıyor; hata mesajları net
+
+  - key: E6
+    title: "Undo & Session Ledger"
+    labels: [area/runtime, type/feature]
+    issues:
+      - title: "Session ledger (SQLite) ve undo steps:N"
+        area: runtime
+        assignees: []
+        body: |
+          Goal
+          - `.nexxon/session.sqlite` ledger, Git/non-Git rollback
+
+          DOD
+          - `nexxon undo` Git varsa git stash/restore; yoksa snapshot
+
+  - key: E7
+    title: "Policy Engine (YAML → JSON Schema, Enforcement)"
+    labels: [area/policy, type/feature]
+    issues:
+      - title: "Policy yükleme ve Ajv ile doğrulama"
+        area: policy
+        assignees: []
+        body: |
+          Goal
+          - policy.yaml, providers.yaml şemaya göre doğrulanır
+
+          DOD
+          - `--validate-policy` exit 0/4 ile güvenli davranır
+
+      - title: "Policy enforcement (FS/Exec/Network/Limits/Models)"
+        area: policy
+        assignees: []
+        body: |
+          Goal
+          - Fail-closed; overrides kısıtlayıcı, admin override denetimli
+
+          DOD
+          - İhlaller audit ve CLI özeti ile görünür
+
+  - key: E8
+    title: "Audit Logging (JSONL)"
+    labels: [area/audit, type/feature]
+    issues:
+      - title: "Audit kaydı ve redaction (JSONL + opsiyonel SQLite)"
+        area: audit
+        assignees: []
+        body: |
+          Goal
+          - `.nexxon/audit.log` formatı ve redaction stratejisi
+
+          DOD
+          - Tüm komutlarda anlamlı kayıt; privacy varsayılanları güvenli
+
+  - key: E9
+    title: "Test Entegrasyonu"
+    labels: [area/tests, type/feature]
+    issues:
+      - title: "Kullanıcı tanımlı test komutu çalıştırma"
+        area: tests
+        assignees: []
+        body: |
+          Goal
+          - `nexxon test --cmd` ve raporlama (exit code, süre)
+
+          DOD
+          - Test çıktıları plan/apply döngüsünde kullanılabilir
+
+  - key: E10
+    title: "Paketleme ve Dağıtım (Single-binary + npm)"
+    labels: [area/packaging, type/chore]
+    issues:
+      - title: "Single-binary paketleme (bundled Node.js runtime)"
+        area: packaging
+        assignees: []
+        body: |
+          Goal
+          - Windows/macOS/Linux binary üretimi; imza/doğrulama temel
+
+          DOD
+          - En az bir zero-friction kurulum yolu
+
+      - title: "NPM global paket"
+        area: packaging
+        assignees: []
+        body: |
+          Goal
+          - `npm i -g nexxon` ile kurulum ve env kontrolleri
+
+          DOD
+          - CLI çalışır; yardım ekranları güncel
+
+  - key: E11
+    title: "Benchmark & QA (P1 Acceptance)"
+    labels: [area/tests, type/chore, priority/p0]
+    issues:
+      - title: "Örnek repo seti ve görevler (Python/JS/Go)"
+        area: tests
+        assignees: []
+        body: |
+          Goal
+          - 3 repo, 10+ görev; p95 kayıtları
+
+          DOD
+          - Rapor: time to diff, tests pass, iterations, acceptance
+
+      - title: "QA Checklist ve coverage hedefleri"
+        area: tests
+        assignees: []
+        body: |
+          Goal
+          - Bölüm 20 kapsamı; unit/integration/e2e hedefleri
+
+          DOD
+          - Hedefler karşılandı; nightly pipeline raporluyor

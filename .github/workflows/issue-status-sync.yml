@@ -1,0 +1,103 @@
+name: Issue Status Sync
+
+on:
+  issues:
+    types: [labeled, unlabeled, reopened, closed]
+
+env:
+  PROJECT_TITLE: P1 (MVP) Board
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (for gh cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Resolve project and item id
+        id: ids
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          OWNER='${{ github.repository_owner }}'
+          ISSUE_NUMBER='${{ github.event.issue.number }}'
+          PROJ_NUM=$(gh project view "$PROJECT_TITLE" --owner "$OWNER" --format json -q .number)
+          echo "proj=$PROJ_NUM"
+          if [ -z "$PROJ_NUM" ]; then echo "project_not_found=1" >> $GITHUB_OUTPUT; exit 0; fi
+          ITEM_ID=$(gh project item-list --owner "$OWNER" --number "$PROJ_NUM" --format json | jq -r ".items[] | select(.content.type==\"Issue\" and .content.number==$ISSUE_NUMBER) | .id" || true)
+          if [ -z "$ITEM_ID" ]; then echo "item_missing=1" >> $GITHUB_OUTPUT; fi
+          echo "project_number=$PROJ_NUM" >> $GITHUB_OUTPUT
+          echo "item_id=$ITEM_ID" >> $GITHUB_OUTPUT
+
+      - name: Compute desired Status from mapping
+        id: map
+        if: steps.ids.outputs.project_number && steps.ids.outputs.item_id
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTION='${{ github.event.action }}'
+          LABEL='${{ github.event.label.name }}'
+          MAP_FILE="planning/status-mapping.yaml"
+          STATUS=""
+          if [ -f "$MAP_FILE" ]; then
+            # Try label-based mapping first (if label present)
+            if [ -n "${LABEL:-}" ]; then
+              STATUS=$(awk -v key="$LABEL" '
+                /^[[:space:]]*labels:/ {in=1; next}
+                /^[[:space:]]*events:/ {in=0}
+                in==1 { if (match($0, /^[[:space:]]*([^:]+):[[:space:]]*(.*)$/, a)) if (a[1]==key) { print a[2]; exit } }
+              ' "$MAP_FILE" || true)
+            fi
+            # If still empty, try event-based mapping
+            if [ -z "$STATUS" ]; then
+              STATUS=$(awk -v key="$ACTION" '
+                /^[[:space:]]*events:/ {in=1; next}
+                in==1 && /^[[:space:]]*labels:/ {in=0}
+                in==1 { if (match($0, /^[[:space:]]*([^:]+):[[:space:]]*(.*)$/, a)) if (a[1]==key) { print a[2]; exit } }
+              ' "$MAP_FILE" || true)
+            fi
+          fi
+          # Fallback defaults if mapping not found
+          if [ -z "$STATUS" ]; then
+            if [ "$ACTION" = "closed" ]; then STATUS='Done'; fi
+            if [ "$ACTION" = "reopened" ]; then STATUS='In Progress'; fi
+            case "$LABEL" in
+              status/in-progress) STATUS='In Progress' ;;
+              status/review) STATUS='Review' ;;
+              status/done) STATUS='Done' ;;
+              status/backlog) STATUS='Backlog' ;;
+            esac
+          fi
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+
+      - name: Apply Status to project item
+        if: steps.ids.outputs.project_number && steps.ids.outputs.item_id && steps.map.outputs.status != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh project item-edit --id '${{ steps.ids.outputs.item_id }}' --field Status --value '${{ steps.map.outputs.status }}'
+
+      - name: Update epic checklist on close
+        if: github.event.action == 'closed'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          OWNER='${{ github.repository_owner }}'
+          ISSUE_NUMBER='${{ github.event.issue.number }}'
+          BODY=$(gh issue view "$ISSUE_NUMBER" --json body -q .body)
+          EPIC_NUM=$(printf "%s" "$BODY" | sed -n 's/.*Parent Epic: #\([0-9]\+\).*/\1/p' | head -n1)
+          if [ -z "$EPIC_NUM" ]; then echo "No Parent Epic found in body"; exit 0; fi
+          CHILD_URL=$(gh issue view "$ISSUE_NUMBER" --json url -q .url)
+          COMMENTS_JSON=$(gh issue comments "$EPIC_NUM" --json id,body)
+          CID=$(printf "%s" "$COMMENTS_JSON" | jq -r --arg url "$CHILD_URL" '.[] | select(.body | contains($url)) | .id' | head -n1)
+          if [ -z "$CID" ] || [ "$CID" = "null" ]; then echo "No checklist comment found"; exit 0; fi
+          gh issue comment "$CID" --json body -q .body > body.txt
+          # Replace unchecked box for the matching line with checked
+          awk -v url="$CHILD_URL" '{ if (index($0, url)>0) { sub("\[ \]","[x]"); } print }' body.txt > body.new.txt
+          gh issue comment "$CID" --edit -F body.new.txt

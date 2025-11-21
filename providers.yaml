@@ -1,0 +1,18 @@
+knowledge:
+  allow_external_web: false
+  web_search:
+    provider: ddg
+    api_key_env: ""
+    rate_limit:
+      rps: 1
+      burst: 5
+    cache_ttl: "10m"
+  docs:
+    sources: [mdn, devdocs]
+  registries:
+    npm: true
+    pypi: true
+    crates_io: false
+    pkg_go_dev: false
+  citations: true
+

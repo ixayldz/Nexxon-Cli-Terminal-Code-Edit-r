@@ -1,0 +1,17 @@
+# Nexxon Docker build artifacts
+.dockerignore
+node_modules
+dist
+.git
+.github
+*.log
+*.md
+planning/
+scripts/
+.nexxon/
+
+# Test files
+**/__tests__/
+**/*.test.ts
+vitest.config.ts
+vitest.setup.ts

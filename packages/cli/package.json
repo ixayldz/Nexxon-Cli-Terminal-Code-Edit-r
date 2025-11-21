@@ -1,0 +1,21 @@
+{
+  "name": "@nexxon/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "nexxon": "./dist/main.js"
+  },
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "@nexxon/ui": "*",
+    "@nexxon/shared": "*",
+    "ink": "^4.4.1",
+    "react": "^18.2.0"
+  }
+}

@@ -1,0 +1,87 @@
+name: Nexxon Diff Summary
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Nexxon task to run (natural language)"
+        required: false
+        default: "analyze diff and propose fixes"
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  nexxon:
+    if: ${{ vars.NEXXON_ENABLE_CI == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Try installing Nexxon CLI (optional)
+        id: install
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v nexxon >/dev/null 2>&1; then
+            echo "has=1" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if npm view nexxon version >/dev/null 2>&1; then
+            npm i -g nexxon
+            echo "has=1" >> $GITHUB_OUTPUT
+          else
+            echo "has=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Nexxon CI (dry-run)
+        if: steps.install.outputs.has == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          TASK_INPUT="${{ github.event_name == 'workflow_dispatch' && inputs.task || 'analyze diff and propose fixes' }}"
+          nexxon ci run --task "$TASK_INPUT" --dry-run --validate-policy || true
+
+      - name: Comment summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- nexxon-diff-summary -->';
+            const fs = require('fs');
+            const path = 'artifacts/report.json';
+            let body;
+            if (!fs.existsSync(path)) {
+              body = `${marker}\nNexxon CLI not available or no report generated. Set repo variable NEXXON_ENABLE_CI=true and ensure Nexxon is published to use this workflow.`;
+            } else {
+              try {
+                const r = JSON.parse(fs.readFileSync(path, 'utf8'));
+                const stats = r.diff_stats || {};
+                const tests = r.tests || {};
+                const plan = (r.plan_steps || []).slice(0,5).map(s => `- ${s}`).join('\n');
+                body = `${marker}\n### Nexxon Diff Summary\n`+
+                       `- Files: ${stats.files ?? '-'}  Hunks: ${stats.hunks ?? '-'}  +${stats.added ?? '-'} / -${stats.removed ?? '-'}\n`+
+                       `- Tests: ${tests.ran ? 'ran' : 'skipped'} (exit ${tests.exit_code ?? '-'}) in ${tests.duration_ms ?? '-'}ms\n`+
+                       `\n#### Plan (top 5)\n${plan || '-'}\n`;
+              } catch (e) {
+                body = `${marker}\nCould not parse artifacts/report.json: ${e.message}`
+              }
+            }
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const prev = comments.find(c => c.body && c.body.includes(marker));
+            if (prev) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: prev.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+

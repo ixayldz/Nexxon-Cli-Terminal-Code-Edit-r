@@ -1,0 +1,10 @@
+labels:
+  status/in-progress: In Progress
+  status/review: Review
+  status/done: Done
+  status/backlog: Backlog
+
+events:
+  closed: Done
+  reopened: In Progress
+

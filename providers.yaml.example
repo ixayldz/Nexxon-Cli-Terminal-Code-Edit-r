@@ -1,0 +1,41 @@
+# Provider Configuration Example
+# Configure knowledge providers and LLM settings
+
+# LLM Providers
+# Set API keys via environment variables:
+#   OPENAI_API_KEY=your-openai-key
+#   ANTHROPIC_API_KEY=your-anthropic-key
+#   GEMINI_API_KEY=your-gemini-key (or GOOGLE_API_KEY)
+
+# Supported Models:
+#   OpenAI: gpt-5.1 (default), gpt-5-mini, gpt-5-nano, gpt-5, gpt-4o, gpt-4o-mini
+#   Anthropic: claude-4-5-sonnet-20250514 (default), claude-3-5-sonnet-20241022
+#   Google: gemini-3-pro (default), gemini-2.5-pro, gemini-2.5-flash
+
+# GPT-5.1 Reasoning Effort:
+#   none (default) - Faster responses, minimal reasoning
+#   low - Basic reasoning
+#   medium - Balanced reasoning
+#   high - Maximum reasoning for complex tasks
+
+# GPT-5.1 Verbosity:
+#   low - Concise responses
+#   medium (default) - Balanced
+#   high - Detailed explanations
+
+# Knowledge Integration
+knowledge:
+  allow_external_web: false  # Enable web search for up-to-date docs
+  web_search:
+    provider: bing            # bing | google_cse | ddg
+    api_key_env: BING_API_KEY
+    rate_limit: { rps: 1, burst: 5 }
+    cache_ttl: 10m            # per-query TTL
+  docs:
+    sources: [mdn, devdocs, react, vue, django, fastapi, spring]
+  registries:
+    npm: true
+    pypi: true
+    crates_io: true
+    pkg_go_dev: true
+  citations: true  # Return source URLs with suggestions

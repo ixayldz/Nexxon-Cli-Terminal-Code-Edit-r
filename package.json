@@ -1,0 +1,93 @@
+{
+  "name": "nexxon-cli",
+  "version": "1.0.0",
+  "description": "AI-Powered Coding Assistant with GPT-5.1, Claude 4.5, and Gemini 3.0 - Interactive terminal UI with Matrix theme",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "nexxon": "./bin/nexxon.js"
+  },
+  "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r/issues"
+  },
+  "homepage": "https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "validate:policy": "node scripts/validate-configs.mjs --file policy.yaml --schema .nexxon/schemas/policy.schema.json",
+    "validate:providers": "node scripts/validate-configs.mjs --file providers.yaml --schema .nexxon/schemas/providers.schema.json",
+    "validate": "npm run validate:policy && npm run validate:providers",
+    "plan:issues": "node scripts/create-issues-from-plan.mjs planning/p1-plan.yml",
+    "build": "tsc -b",
+    "build:clean": "rimraf packages/**/dist",
+    "dev:runtime": "tsx packages/runtime/src/server.ts",
+    "dev:cli": "tsx packages/cli/src/main.ts",
+    "prepare": "npm run build",
+    "lint": "eslint \"packages/**/src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/diff": "^7.0.2",
+    "@types/figlet": "^1.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^20.19.25",
+    "@types/react": "^19.2.6",
+    "@vitest/ui": "^4.0.10",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "tsx": "^4.16.2",
+    "typescript": "^5.4.5",
+    "vitest": "^4.0.10",
+    "yaml": "^2.4.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "boxen": "^7.1.1",
+    "chalk": "^5.6.2",
+    "cli-spinners": "^2.9.2",
+    "figlet": "^1.9.4",
+    "gradient-string": "^2.0.2",
+    "ink": "^6.5.1",
+    "ink-spinner": "^5.0.0",
+    "inquirer": "^9.3.8",
+    "ora": "^9.0.0",
+    "react": "^19.2.0",
+    "sqlite-vss": "^0.1.2",
+    "sqlite3": "^5.1.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "ai",
+    "coding-assistant",
+    "cli",
+    "terminal",
+    "interactive",
+    "gpt-5",
+    "claude",
+    "gemini",
+    "llm",
+    "code-generation",
+    "refactoring",
+    "matrix",
+    "tui",
+    "repl"
+  ],
+  "author": "Nexxon Team",
+  "license": "MIT"
+}
