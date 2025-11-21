@@ -1,332 +1,200 @@
-# Nexxon CLI - Quick Start Guide
+# 🤖 Nexxon CLI
 
-## Prerequisites
+> AI-Powered Coding Assistant with Interactive Matrix-Themed Terminal UI
 
-- Node.js 20.x or later
-- **At least ONE LLM API key:**
-  - OpenAI API key for GPT-5.1 ([Get key](https://platform.openai.com/api-keys))
-  - Anthropic API key for Claude 4.5 Sonnet ([Get key](https://console.anthropic.com/settings/keys))
-  - Google API key for Gemini 3.0 Pro ([Get key](https://aistudio.google.com/app/apikey))
+[![npm version](https://badge.fury.io/js/nexxon-cli.svg)](https://www.npmjs.com/package/nexxon-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![GitHub](https://img.shields.io/github/stars/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r?style=social)](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r)
 
-## Installation
+Nexxon CLI is a next-generation AI coding assistant that brings **GPT-5.1, Claude 4.5 Sonnet, and Gemini 3.0 Pro** to your terminal with a beautiful Matrix-themed interactive interface.
 
-```bash
-# Install dependencies
-npm install
+## ✨ Features
 
-# Set up environment - Choose at least ONE provider:
+- 🎨 **Matrix-Themed UI** - Beautiful green terminal aesthetic with ASCII art
+- 🤖 **Multi-LLM Support** - GPT-5.1, Claude 4.5, Gemini 3.0 Pro
+- ⚡ **Slash Commands** - Quick actions with `/plan`, `/diff`, `/model`
+- 💬 **Interactive REPL** - Natural language + command mode
+- 🔮 **Auto-Completion** - Tab completion for commands and files
+- 🚀 **Auto-Start Runtime** - No manual setup required
+- 📦 **Global Installation** - One command to install
+- ✅ **Production Ready** - Fully tested and documented
 
-# Option 1: OpenAI GPT-5.1 (Latest Flagship Model)
-export OPENAI_API_KEY="your-openai-api-key-here"
+## 🚀 Quick Start
 
-# Option 2: Anthropic Claude 4.5 Sonnet
-export ANTHROPIC_API_KEY="your-anthropic-api-key-here"
-
-# Option 3: Google Gemini 3.0 Pro
-export GEMINI_API_KEY="your-gemini-api-key-here"
-
-# Windows PowerShell:
-# $env:OPENAI_API_KEY="your-api-key"
-# $env:ANTHROPIC_API_KEY="your-api-key"
-# $env:GEMINI_API_KEY="your-api-key"
-
-# You can set multiple keys to use different providers
-
-# GPT-5.1 Advanced Options (optional):
-# export NEXXON_REASONING_EFFORT=none    # none|low|medium|high (default: none)
-# export NEXXON_VERBOSITY=medium         # low|medium|high (default: medium)
-```
-
-## Running the System
-
-### 1. Start the Runtime Server
+### Installation
 
 ```bash
-# In terminal 1
-npm run dev:runtime
-
-# Server will start on http://127.0.0.1:7777
+npm install -g nexxon-cli
 ```
 
-### 2. Use the CLI
+### Setup
+
+Set up at least ONE API key:
 
 ```bash
-# In terminal 2
+# Option 1: OpenAI GPT-5.1
+export OPENAI_API_KEY="sk-proj-..."
 
-# Check identity
-npm run dev:cli -- whoami
+# Option 2: Anthropic Claude 4.5
+export ANTHROPIC_API_KEY="sk-ant-..."
 
-# Tip: if you start runtime on a non-default port
-# (e.g., NEXXON_PORT=7788), point CLI to it via env:
-#   Windows PowerShell
-#   $env:NEXXON_PORT=7788; npm run dev:cli -- whoami
-#   macOS/Linux
-#   NEXXON_PORT=7788 npm run dev:cli -- whoami
-
-# Tip: force JSON output via env (useful on Windows if --json is not forwarded)
-#   $env:NEXXON_JSON=1; npm run dev:cli -- whoami
-
-# Index current directory
-npm run dev:cli -- init
-
-# Create a plan
-npm run dev:cli -- plan "add a new feature to calculate fibonacci"
-
-# Generate diff for a file
-npm run dev:cli -- diff --task "add error handling" --file src/example.ts
-
-# Run tests
-npm run dev:cli -- test --cmd "npm test"
+# Option 3: Google Gemini 3.0
+export GEMINI_API_KEY="AIza..."
 ```
 
-## Available Commands
-
-### Core Commands
-
-- `init` - Index repository (respects .gitignore)
-- `search <query>` - Search codebase
-- `plan <task>` - Generate implementation plan
-- `diff` - Generate code changes
-- `apply` - Apply changes to files
-- `test` - Run test command
-- `log` - View audit logs
-- `whoami` - Show identity and policy
-- `undo` - Revert last changes
-- `iterate` - Simple loop: diff -> apply -> test (max N)
-
-### Global Flags
-
-- `--validate-policy` - Validate policy before execution
-- `--admin-override <reason>` - Admin override (requires RBAC)
-
-## Example Workflow
+### Usage
 
 ```bash
-# 1. Plan a feature
-npm run dev:cli -- plan "add user authentication"
-
-# 2. Generate code for specific file
-npm run dev:cli -- diff --task "implement login function" --file src/auth.ts
-
-# 3. Apply changes (with dry-run first)
-npm run dev:cli -- apply --file src/auth.ts --content "..." --dry-run
-
-# 4. Run tests
-npm run dev:cli -- test --cmd "npm test"
-
-# 5. Check audit log
-npm run dev:cli -- log
-
-# 6. Try simple iteration (P1 loop)
-npm run dev:cli -- iterate --task "fix failing login tests" --file src/auth.ts --test-cmd "npm test" --max-loops 2
+nexxon  # Start interactive mode
 ```
 
-## Configuration
+## 🎯 Interactive Mode
 
-### policy.yaml
+```
+╔══════════════════════════════════════════════════════════════╗
+║   ███╗   ██╗███████╗██╗  ██╗██╗  ██╗ ██████╗ ███╗   ██╗    ║
+║   ████╗  ██║██╔════╝╚██╗██╔╝╚██╗██╔╝██╔═══██╗████╗  ██║    ║
+║   ██╔██╗ ██║█████╗   ╚███╔╝  ╚███╔╝ ██║   ██║██╔██╗ ██║    ║
+║   ██║╚██╗██║██╔══╝   ██╔██╗  ██╔██╗ ██║   ██║██║╚██╗██║    ║
+║   ██║ ╚████║███████╗██╔╝ ██╗██╔╝ ██╗╚██████╔╝██║ ╚████║    ║
+║              AI-Powered Coding Assistant                    ║
+╚══════════════════════════════════════════════════════════════╝
 
-Controls security and operational policies:
+🤖 GPT-5.1 • Claude 4.5 • Gemini 3.0
+⚡ Ready to code
 
-```yaml
-version: 1
-scope:
-  fs:
-    allow: ["./", "./src", "./tests"]
-    deny: ["../", "/"]
-  network:
-    outbound: ["api.openai.com"]
-  exec:
-    allow: ["git", "npm", "node"]
-    confirm: ["npm install"]
-limits:
-  tokens_per_session: 200000
+nexxon> /help
 ```
 
-### providers.yaml
+## 📚 Slash Commands
 
-Configures knowledge providers:
+| Command | Description |
+|---------|-------------|
+| `/help` | Show available commands |
+| `/plan <task>` | Create implementation plan |
+| `/diff <file>` | Generate file diff |
+| `/model [name]` | Switch/list LLM models |
+| `/search <query>` | Search codebase |
+| `/clear` | Clear screen |
+| `/exit` | Exit application |
 
-```yaml
-knowledge:
-  allow_external_web: false
-  docs:
-    sources: [mdn, devdocs]
-  registries:
-    npm: true
-    pypi: true
+## 💡 Examples
+
+### Create a Plan
+
+```
+nexxon> /plan add user authentication
+
+✓ Plan created successfully
+{
+  "plan_steps": [
+    "Create user model",
+    "Add password hashing",
+    "Implement JWT middleware"
+  ]
+}
 ```
 
-## Troubleshooting
+### Switch Models
 
-### Runtime server won't start
-
-- Check if port 7777 is already in use
-- Set custom port: `NEXXON_PORT=8888 npm run dev:runtime`
-
-### LLM calls fail
-
-- Verify `OPENAI_API_KEY` is set
-- Check network connectivity
-- Review audit logs: `npm run dev:cli -- log`
-
-
-## Configuration
-
-### policy.yaml
-
-Controls security and operational policies:
-
-```yaml
-version: 1
-scope:
-  fs:
-    allow: ["./", "./src", "./tests"]
-    deny: ["../", "/"]
-  network:
-    outbound: ["api.openai.com"]
-  exec:
-    allow: ["git", "npm", "node"]
-    confirm: ["npm install"]
-limits:
-  tokens_per_session: 200000
+```
+nexxon> /model claude-4-5-sonnet-20250514
+✓ Switched to model: claude-4-5-sonnet-20250514
 ```
 
-### providers.yaml
+### Search Code
 
-Configures knowledge providers:
-
-```yaml
-knowledge:
-  allow_external_web: false
-  docs:
-    sources: [mdn, devdocs]
-  registries:
-    npm: true
-    pypi: true
+```
+nexxon> /search authentication
 ```
 
-## Troubleshooting
+## 🛠️ Classic CLI Mode
 
-### Runtime server won't start
-
-- Check if port 7777 is already in use
-- Set custom port: `NEXXON_PORT=8888 npm run dev:runtime`
-
-### LLM calls fail
-
-- Verify `OPENAI_API_KEY` is set
-- Check network connectivity
-- Review audit logs: `npm run dev:cli -- log`
-
-### Permission errors
-
-- Check `policy.yaml` settings
-- Ensure file paths are in allowed scope
-- Use `--admin-override` if needed (with caution)
-
-## Development
+Backward compatible with traditional CLI:
 
 ```bash
-# Run validation
-npm run validate
-
-# Build all packages
-npm run build
-
-# Lint code
-npm run lint
-
-# Run tests
-npm test
+nexxon init                         # Initialize repository
+nexxon search "authentication"      # Search code
+nexxon plan "add feature"          # Create plan
+nexxon diff --file app.ts          # Generate diff
+nexxon apply --file app.ts         # Apply changes
+nexxon test --cmd "npm test"       # Run tests
+nexxon whoami                      # Show identity
 ```
 
-## Packaging & Distribution
+## 🤖 Supported Models
 
-### Docker
+### OpenAI GPT-5.1
+- Latest flagship model with Responses API
+- Reasoning effort control (none/low/medium/high)
+- Verbosity settings
 
-Build and run Nexxon in a container:
+### Anthropic Claude 4.5 Sonnet
+- Advanced reasoning capabilities
+- 200K context window
+- Superior code generation
+
+### Google Gemini 3.0 Pro
+- Multimodal understanding
+- 2M context window
+- Fast inference
+
+## 🔧 Configuration
+
+### API Keys
+
+Set via environment variables:
 
 ```bash
-# Build Docker image
-docker build -t nexxon/cli .
-
-# Run Nexxon CLI
-docker run nexxon/cli --version
-docker run -v $(pwd):/workspace nexxon/cli plan "add feature"
+export OPENAI_API_KEY="..."
+export ANTHROPIC_API_KEY="..."
+export GEMINI_API_KEY="..."
 ```
 
-### Single Binary
+Or create `.env` file:
 
-Create standalone executables for distribution:
+```env
+OPENAI_API_KEY=sk-proj-...
+ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=AIza...
+```
+
+### Advanced Options
 
 ```bash
-# Build binaries for all platforms
-node scripts/build-binaries.mjs
-
-# Outputs to dist-binaries/:
-#   nexxon-linux-x64
-#   nexxon-linux-arm64
-#   nexxon-macos-x64
-#   nexxon-macos-arm64
-#   nexxon-win-x64.exe
+export NEXXON_PORT=8888           # Custom runtime port
+export NEXXON_JSON=1              # Force JSON output
+export NEXXON_REASONING_EFFORT=high  # GPT-5.1 reasoning
+export NEXXON_VERBOSITY=low       # Output verbosity
 ```
 
-## Benchmarking
+## 📖 Documentation
 
-Run performance benchmarks per PRD Section 17:
+- [Full User Guide](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r/blob/main/KULLANIM_KILAVUZU.md)
+- [Changelog](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r/blob/main/CHANGELOG.md)
+- [API Documentation](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r/blob/main/prd.md)
 
-```bash
-# Build benchmark package
-npm run build
+## 🏗️ Architecture
 
-# Run benchmark suite
-cd packages/benchmark
-npm run benchmark
+- **CLI:** Interactive REPL with slash commands
+- **Runtime:** Fastify-based server with LLM orchestration
+- **Providers:** Multi-provider support with circuit breakers
+- **Policy:** RBAC, audit logging, network controls
 
-# View results in artifacts/benchmark-report.json
-```
+## 🤝 Contributing
 
-Metrics measured:
-- Time to first valid diff
-- Time to passing tests
-- Number of iterations
-- Diff acceptance rate (target: >= 80%)
-- Test success rate (target: >= 95%)
+Contributions welcome! See [GitHub repository](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r).
 
-## CI/CD Integration
+## 📄 License
 
-### Initialize CI Workflow
+MIT © 2025 Ayildiz
 
-```bash
-# Generate GitHub Actions workflow
-nexxon ci init --provider github
+## 🔗 Links
 
-# Generate GitLab CI config
-nexxon ci init --provider gitlab
-```
+- [GitHub](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r)
+- [NPM Package](https://www.npmjs.com/package/nexxon-cli)
+- [Issues](https://github.com/ixayldz/Nexxon-Cli-Terminal-Code-Edit-r/issues)
 
-### Run in CI
+---
 
-```bash
-# Dry-run analysis (no changes applied)
-nexxon ci run --task "analyze PR changes" --dry-run
-
-# Annotate PR with results
-nexxon ci annotate --from artifacts/report.json --provider github
-```
-
-See `.github/workflows/nexxon.yml` for example integration.
-
-## Next Steps
-
-- Configure your `policy.yaml` for your project
-- Set up CI/CD hooks
-- Run benchmarks to validate performance
-- Explore multi-agent features (coming in Phase 2)
-- Join the community at https://github.com/nexxon-cli
-
-## Support
-
-- Documentation: https://nexxon.dev/docs
-- Issues: https://github.com/nexxon-cli/nexxon/issues
-- Discord: https://discord.gg/nexxon
+**Made with ❤️ and Matrix green**
